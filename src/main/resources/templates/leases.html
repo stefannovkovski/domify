@@ -21,28 +21,21 @@
       cursor: pointer;
       transition: color 0.2s;
       margin-right: 4px;
+      font-size: 1.2rem;
+    }
+    .star-rating i:hover {
+      transform: scale(1.1);
+    }
+    .rating-info {
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 4px;
     }
   </style>
 </head>
 <body>
-<header class="header-gradient text-white py-3 rounded-bottom-4 shadow-sm">
-  <div class="container-fluid">
-    <div class="row align-items-center">
-      <div class="col-md-6 d-flex align-items-center">
-        <img th:src="@{/images/logo.png}" class="ms-5 rounded-pill" style="width: 50px; height: 50px; object-fit: cover;">
-        <h1 class="h2 mb-0 ms-3 me-4">Domify</h1>
-        <button class="btn btn-outline-light">Мои изнајмувања</button>
-      </div>
-      <div class="col-md-6 text-end">
-        <span class="btn btn-outline-light me-2">
-          <i class="bi bi-person-circle me-2"></i>
-          <span th:text="${user.firstName + ' ' + user.lastName}">Стефан Николов</span>
-        </span>
-        <a th:href="@{/logout}" class="btn btn-outline-light">Одјави се</a>
-      </div>
-    </div>
-  </div>
-</header>
+<div th:replace="fragments/header :: appHeader(${user}, ${isLandlord})"></div>
+
 
 <div class="m-auto w-75">
   <h2 class="mt-5" style="color:#1976d2;">Мои изнајмувања</h2>
@@ -66,26 +59,37 @@
         <td class="py-3 px-4" th:text="${#temporals.format(lease.endDate, 'yyyy-MM-dd')}">2025-12-31</td>
 
         <td class="py-3 px-4">
-          <div th:if="${userService.isLandlord(user.id)}">
-            <div class="star-rating" th:attr="data-lease-id=${lease.id},data-rate-type='tenant'">
+          <div th:if="${isLandlord}">
+            <div class="star-rating" th:attr="data-lease-id=${lease.id}">
               <i th:each="star : ${#numbers.sequence(1, 5)}"
-                 th:classappend="${lease.tenant.user.rating >= star} ? 'bi-star-fill' : 'bi-star'"
-                 class="bi fs-4 text-warning"
+                 class="bi bi-star text-warning"
                  th:attr="data-value=${star}"></i>
             </div>
+            <div class="rating-info">
+              Оценете го станарот
+            </div>
+            <div class="rating-info">
+              Тековна оценка: <span th:text="${lease.tenant.user.rating}">0</span>⭐
+            </div>
           </div>
-          <div th:unless="${userService.isLandlord(user.id)}">
-            <div class="star-rating" th:attr="data-lease-id=${lease.id},data-rate-type='landlord'">
+
+          <div th:if="${!isLandlord}">
+            <div class="star-rating" th:attr="data-lease-id=${lease.id}">
               <i th:each="star : ${#numbers.sequence(1, 5)}"
-                 th:classappend="${lease.landlord.user.rating >= star} ? 'bi-star-fill' : 'bi-star'"
-                 class="bi fs-4 text-warning"
+                 class="bi bi-star text-warning"
                  th:attr="data-value=${star}"></i>
+            </div>
+            <div class="rating-info">
+              Оценете го сопственикот
+            </div>
+            <div class="rating-info">
+              Тековна оценка: <span th:text="${lease.landlord.user.rating}">0</span>⭐
             </div>
           </div>
         </td>
 
         <td class="py-3 px-4">
-          <a th:href="@{/leases/{id}/details(id=${lease.id})}"
+          <a th:href="@{/lease/{id}/details(id=${lease.id})}"
              class="btn btn-sm btn-outline-primary rounded-pill px-3">
             Види детали
           </a>
@@ -103,15 +107,20 @@
     const leaseId = container.dataset.leaseId;
 
     function setStars(rating) {
-      stars.forEach(star => {
-        star.classList.toggle('bi-star-fill', star.dataset.value <= rating);
-        star.classList.toggle('bi-star', star.dataset.value > rating);
+      stars.forEach((star, index) => {
+        if (index < rating) {
+          star.classList.remove('bi-star');
+          star.classList.add('bi-star-fill');
+        } else {
+          star.classList.remove('bi-star-fill');
+          star.classList.add('bi-star');
+        }
       });
     }
 
-    stars.forEach(star => {
+    stars.forEach((star, index) => {
       star.addEventListener('mouseenter', () => {
-        setStars(star.dataset.value);
+        setStars(index + 1);
       });
 
       star.addEventListener('mouseleave', () => {
@@ -119,26 +128,43 @@
       });
 
       star.addEventListener('click', () => {
-        currentRating = star.dataset.value;
+        const newRating = index + 1;
+        currentRating = newRating;
         setStars(currentRating);
 
-        fetch('/api/leases/' + leaseId + '/rate', {
+        fetch('/lease/api/leases/' + leaseId + '/rate', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ rating: currentRating }),
+          body: JSON.stringify({ rating: newRating }),
         })
-                .then(response => {
-                  if (!response.ok) throw new Error('Грешка при испраќање на оценката');
-                  return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
-                  console.log('Rating saved:', data);
+                  if (data.status === 'success') {
+                    console.log('Rating saved successfully');
+                    const successMsg = document.createElement('div');
+                    successMsg.className = 'alert alert-success alert-dismissible fade show mt-2';
+                    successMsg.innerHTML = `
+              <small>Оценката е успешно зачувана!</small>
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+                    container.appendChild(successMsg);
+
+                    setTimeout(() => {
+                      if (successMsg.parentNode) {
+                        successMsg.remove();
+                      }
+                    }, 3000);
+                  } else {
+                    throw new Error(data.message || 'Unknown error');
+                  }
                 })
                 .catch(err => {
-                  alert('Грешка при испраќање на оценката');
-                  console.error(err);
+                  console.error('Error saving rating:', err);
+                  alert('Грешка при зачувување на оценката: ' + err.message);
+                  // Reset stars on error
+                  currentRating = 0;
                   setStars(currentRating);
                 });
       });
@@ -146,5 +172,6 @@
   });
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

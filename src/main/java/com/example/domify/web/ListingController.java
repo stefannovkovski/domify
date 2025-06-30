@@ -13,15 +13,13 @@ import java.util.List;
 @Controller
 @RequestMapping(value = {"/", "/listings"})
 public class ListingController {
-    private final AddressService addressService;
     private final ListingService listingService;
     private final UserService userService;
     private final UnitService unitService;
     private final InterestedService interestedService;
     private final TenantProfileService tenantProfileService;
 
-    public ListingController(AddressService addressService, ListingService listingService, UserService userService, UnitService unitService, InterestedService interestedService, TenantProfileService tenantProfileService) {
-        this.addressService = addressService;
+    public ListingController(ListingService listingService, UserService userService, UnitService unitService, InterestedService interestedService, TenantProfileService tenantProfileService) {
         this.listingService = listingService;
         this.userService = userService;
         this.unitService = unitService;
@@ -31,22 +29,12 @@ public class ListingController {
 
     @GetMapping
     public String getListings(HttpServletRequest request,Model model) {
-        UserD user = (UserD) request.getSession().getAttribute("user");
-        if (user != null)
-        {
-            model.addAttribute("user",user);
-            model.addAttribute("isLandlord",userService.isLandlord(user.getId()));
-        }else {
-            model.addAttribute("user", null);
-            model.addAttribute("isLandlord", false);
-        }
-
         model.addAttribute("listings",listingService.findAll());
         return "index";
     }
 
     @GetMapping("/create")
-    public String showCreateForm(@RequestParam Long unitId, Model model) {
+    public String showCreateForm(@RequestParam Long unitId, Model model, HttpServletRequest request) {
         model.addAttribute("unitId", unitId);
         return "create-listing";
     }
@@ -80,7 +68,7 @@ public class ListingController {
 
             listingService.save(listing);
 
-            return "redirect:/properties/" + unit.getProperty().getId();
+            return "redirect:/listings";
 
         } catch (Exception e) {
             return "redirect:/listings/create?unitId=" + unitId;
@@ -92,6 +80,8 @@ public class ListingController {
                                     Model model,
                                     HttpServletRequest request) {
         UserD user = (UserD) request.getSession().getAttribute("user");
+        if (user == null)
+            return "redirect:/login";
         boolean isLandlord = userService.isLandlord(user.getId());
         Listing listing = listingService.findById(id);
         model.addAttribute("listing", listing);
@@ -100,7 +90,7 @@ public class ListingController {
     }
 
     @GetMapping("/{id}/applications")
-    public String getInterestedTenants(@PathVariable Long id, Model model) {
+    public String getInterestedTenants(@PathVariable Long id, Model model, HttpServletRequest request) {
         Listing listing = listingService.findById(id);
 
         List<Interested> interestedList = interestedService.findByListingId(id);

@@ -17,56 +17,28 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/properties")
 public class PropertiesController {
-    private static final Logger logger = LoggerFactory.getLogger(PropertiesController.class);
-
     private final PropertiesService propertiesService;
-    private final UserService userService;
     private final PropertyTypeRepository propertyRepository;
 
-    public PropertiesController(PropertiesService propertiesService, UserService userService, PropertyTypeRepository propertyRepository) {
+    public PropertiesController(PropertiesService propertiesService, PropertyTypeRepository propertyRepository) {
         this.propertiesService = propertiesService;
-        this.userService = userService;
         this.propertyRepository = propertyRepository;
     }
 
     @GetMapping("/{userId}")
-    public String getProperties(HttpServletRequest request, @PathVariable Long userId, Model model) {
-        UserD user = (UserD) request.getSession().getAttribute("user");
-        if (user != null) {
-            model.addAttribute("user", user);
-            model.addAttribute("isLandlord", userService.isLandlord(user.getId()));
-        } else {
-            model.addAttribute("user", null);
-            model.addAttribute("isLandlord", false);
-        }
+    public String getProperties(@PathVariable Long userId, Model model) {
         model.addAttribute("properties", propertiesService.findByOwnerId(userId));
         return "properties";
     }
 
     @GetMapping("/{propertyId}/details")
-    public String getPropertiesDetails(HttpServletRequest request, @PathVariable Long propertyId, Model model) {
-        UserD user = (UserD) request.getSession().getAttribute("user");
-        if (user != null) {
-            model.addAttribute("user", user);
-            model.addAttribute("isLandlord", userService.isLandlord(user.getId()));
-        } else {
-            model.addAttribute("user", null);
-            model.addAttribute("isLandlord", false);
-        }
+    public String getPropertiesDetails(@PathVariable Long propertyId, Model model) {
         model.addAttribute("property", propertiesService.findDetails(propertyId).get());
         return "property";
     }
 
     @GetMapping("/add")
-    public String getAddPage(HttpServletRequest request, Model model) {
-        UserD user = (UserD) request.getSession().getAttribute("user");
-        if (user != null) {
-            model.addAttribute("user", user);
-            model.addAttribute("isLandlord", userService.isLandlord(user.getId()));
-        } else {
-            model.addAttribute("user", null);
-            model.addAttribute("isLandlord", false);
-        }
+    public String getAddPage( Model model) {
         model.addAttribute("propertyTypes", propertyRepository.findAll());
         return "create-property";
     }

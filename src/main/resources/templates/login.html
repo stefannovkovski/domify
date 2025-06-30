@@ -19,6 +19,10 @@
   <div class="bg-light-subtle rounded-4 shadow-sm p-5" style="width: 100%; max-width: 400px;">
     <h2 class="text-center text-primary fw-bold mb-4">Најава</h2>
 
+    <div th:if="${param.logout}" class="alert alert-success text-center">
+      Успешно се одјавивте.
+    </div>
+
     <form action="/login" method="post">
       <div class="mb-3">
         <label for="email" class="form-label text-primary">Е-пошта</label>

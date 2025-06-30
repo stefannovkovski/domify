@@ -20,51 +20,8 @@
     </style>
 </head>
 <body>
-<header class="header-gradient text-white py-3 rounded-bottom-4 shadow-sm">
-    <div class="container-fluid">
-        <div class="row align-items-center">
-            <div class="col-md-6 d-flex align-items-center">
-                <img src="/images/logo.png" class="ms-5 rounded-pill" style="width: 50px; height: 50px; object-fit: cover;">
-                <h1 class="h2 mb-0 ms-3 me-4">Domify</h1>
-                <a href="/my-rentals" class="btn btn-outline-light" th:if="${user != null} and ${isLandlord}" >Мои огласи</a>
-                <a href="/my-rentals" class="btn btn-outline-light" th:if="${user != null} and ${!isLandlord}" >Мои изнајмувања</a>
-            </div>
-            <div class="col-md-6 d-flex justify-content-end align-items-center">
-                <div class="dropdown d-inline-block me-5">
-                    <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-person-circle me-2"></i>
+<div th:replace="fragments/header :: appHeader(${user}, ${isLandlord})"></div>
 
-                        <span th:if="${user != null}" th:text="${user.getFirstName() + ' ' + user.getLastName()}">Корисник</span>
-                        <span th:if="${user == null}">Најави се</span>
-                    </button>
-
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown"
-                        th:if="${user != null} and ${isLandlord}">
-                        <li><a class="dropdown-item" href="#">Профил</a></li>
-                        <li><a class="dropdown-item" href="#">Мои изнајмувања</a></li>
-                        <li><a class="dropdown-item" href="#">Направи оглас</a></li>
-                        <li><a class="dropdown-item" th:href="@{'/properties/' + ${user.getId()}}">Мои имоти</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="/logout">Одјави се</a></li>
-                    </ul>
-
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown"
-                        th:if="${user != null} and !${isLandlord}">
-                        <li><a class="dropdown-item" href="#">Профил</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="/logout">Одјави се</a></li>
-                    </ul>
-
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown"
-                        th:if="${user == null}">
-                        <li><a class="dropdown-item" href="/login">Најави се</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-</header>
 
 <div class="mt-4 bg-light-subtle rounded-4 shadow-sm p-4 m-auto mb-4" style="width: 85%;">
     <button class="btn btn-outline-primary mb-4" onclick="history.back()">

@@ -42,12 +42,12 @@ public class LeaseServiceImpl implements LeaseService {
     }
 
     @Transactional
-    public void rateUser(Long leaseId, Long raterId, Integer rating, boolean isRatingTenant) {
+    public void rateUser(Long leaseId, Long raterProfileId, Integer rating, boolean isRatingTenant) {
         Lease lease = leaseRepository.findById(leaseId)
                 .orElseThrow(() -> new IllegalArgumentException("Lease not found"));
 
-        boolean isRaterLandlord = lease.getLandlord().getId().equals(raterId);
-        boolean isRaterTenant = lease.getTenant().getId().equals(raterId);
+        boolean isRaterLandlord = lease.getLandlord().getId().equals(raterProfileId);
+        boolean isRaterTenant = lease.getTenant().getId().equals(raterProfileId);
 
         if (!isRaterLandlord && !isRaterTenant) {
             throw new IllegalArgumentException("User is not part of this lease");
@@ -62,6 +62,7 @@ public class LeaseServiceImpl implements LeaseService {
         }
 
         UserD userToRate = isRatingTenant ? lease.getTenant().getUser() : lease.getLandlord().getUser();
+
         userService.updateUserRating(userToRate.getId(), BigDecimal.valueOf(rating));
     }
 }
