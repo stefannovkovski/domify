@@ -17,4 +17,5 @@ public interface PropertiesService {
                                       String street, String streetNumber, String municipality,
                                       String city, String country, MultipartFile[] images,
                                       UserD owner) throws IOException;
+    Property findById(Long id);
 }

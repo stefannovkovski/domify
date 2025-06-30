@@ -3,6 +3,7 @@ package com.example.domify.service;
 import com.example.domify.model.Address;
 import com.example.domify.model.UserD;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public interface UserService {
@@ -20,4 +21,6 @@ public interface UserService {
                    boolean isAgent);
 
     Boolean isLandlord(Long userId);
+    UserD findById(Long userId);
+    void updateUserRating(Long userId, BigDecimal newRating);
 }

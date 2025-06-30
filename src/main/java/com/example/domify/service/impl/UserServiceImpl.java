@@ -5,10 +5,12 @@ import com.example.domify.model.exceptions.PasswordsDoNotMatch;
 import com.example.domify.model.exceptions.UserWithEmailAlreadyExists;
 import com.example.domify.repository.*;
 import com.example.domify.service.UserService;
+import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 @Service
@@ -81,5 +83,28 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean isLandlord(Long userId) {
         return landlordProfileRepository.findById(userId).isPresent();
+    }
+
+    @Override
+    public UserD findById(Long userId) {
+        return userRepository.findById(userId).orElseThrow(RuntimeException::new);
+    }
+
+    @Transactional
+    public void updateUserRating(Long userId, BigDecimal newRating) {
+        UserD user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // Calculate new average rating (you might want more sophisticated logic)
+        if (user.getRating().compareTo(BigDecimal.ZERO) == 0) {
+            user.setRating(newRating);
+        } else {
+            BigDecimal average = user.getRating()
+                    .add(newRating)
+                    .divide(BigDecimal.valueOf(2), 2, RoundingMode.HALF_UP);
+            user.setRating(average);
+        }
+
+        userRepository.save(user);
     }
 }
