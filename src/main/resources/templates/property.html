@@ -126,7 +126,7 @@
         <tr th:each="unit : ${property.units}">
           <td class="py-3 px-4" th:text="${unit.unitNumber}">Име</td>
           <td class="py-3 px-3 d-flex justify-content-end">
-            <a th:href="@{'/units/' + ${unit.id}}" class="btn btn-sm btn-outline-primary rounded-pill px-3 me-3">Детали</a>
+            <a th:href="@{'/units/' + ${unit.id} + '/details'}" class="btn btn-sm btn-outline-primary rounded-pill px-3 me-3">Детали</a>
             <a th:href="@{'/listings/create?unitId=' + ${unit.id}}" class="btn btn-sm btn-outline-primary rounded-pill px-3">Направи оглас</a>
           </td>
         </tr>
