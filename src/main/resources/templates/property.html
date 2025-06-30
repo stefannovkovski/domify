@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Domify - Детали за имот</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f5fafd 0%, #e3f0ff 100%);
+    }
+    .header-gradient {
+      background: linear-gradient(90deg, #1976d2 0%, #64b5f6 100%);
+    }
+  </style>
+</head>
+<body>
+<header class="header-gradient text-white py-3 rounded-bottom-4 shadow-sm">
+  <div class="container-fluid">
+    <div class="row align-items-center">
+      <div class="col-md-6 d-flex align-items-center">
+        <img src="/images/logo.png" class="ms-5 rounded-pill" style="width: 50px; height: 50px; object-fit: cover;">
+        <h1 class="h2 mb-0 ms-3 me-4">Domify</h1>
+        <a href="/my-rentals" class="btn btn-outline-light" th:if="${user != null} and ${isLandlord}" >Мои огласи</a>
+        <a href="/my-rentals" class="btn btn-outline-light" th:if="${user != null} and ${!isLandlord}" >Мои изнајмувања</a>
+      </div>
+      <div class="col-md-6 d-flex justify-content-end align-items-center">
+        <div class="dropdown d-inline-block me-5">
+          <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown"
+                  data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-person-circle me-2"></i>
+
+            <span th:if="${user != null}" th:text="${user.getFirstName() + ' ' + user.getLastName()}">Корисник</span>
+            <span th:if="${user == null}">Најави се</span>
+          </button>
+
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown"
+              th:if="${user != null} and ${isLandlord}">
+            <li><a class="dropdown-item" href="#">Профил</a></li>
+            <li><a class="dropdown-item" href="#">Мои изнајмувања</a></li>
+            <li><a class="dropdown-item" href="#">Направи оглас</a></li>
+            <li><a class="dropdown-item" th:href="@{'/properties/' + ${user.getId()}}">Мои имоти</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="/logout">Одјави се</a></li>
+          </ul>
+
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown"
+              th:if="${user != null} and !${isLandlord}">
+            <li><a class="dropdown-item" href="#">Профил</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="/logout">Одјави се</a></li>
+          </ul>
+
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown"
+              th:if="${user == null}">
+            <li><a class="dropdown-item" href="/login">Најави се</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="mt-4 bg-light-subtle rounded-4 shadow-sm p-4 m-auto mb-4" style="width: 85%;">
+  <a th:href="@{'/properties/' + ${user.getId()}}" class="btn btn-outline-primary">
+    <i class="bi bi-arrow-left me-2"></i> Назад
+  </a>
+
+  <div class="d-flex justify-content-between align-items-start gap-4 mt-4">
+    <div class="m-auto">
+      <h2 class="text-primary mb-4 fw-bold" th:text="${property.title}">Име на имот</h2>
+
+      <div class="border-top border-bottom py-3">
+        <div class="d-flex justify-content-between py-2">
+          <span class="text-primary fw-medium">Креирано на:</span>
+          <span class="text-dark" th:text="${#temporals.format(property.createdAt, 'yyyy-MM-dd')}">2024-07-01</span>
+        </div>
+
+        <div class="d-flex justify-content-between py-2">
+          <span class="text-primary fw-medium">Адреса:</span>
+          <span class="text-dark" th:text="${property.address.country + ', ' + property.address.city + ' - ' + property.address.municipality}">Адреса</span>
+        </div>
+      </div>
+
+      <div class="pt-3">
+        <div class="d-flex justify-content-between py-2">
+          <span class="text-primary fw-medium">Сопственик:</span>
+          <span class="text-dark fw-bold" th:text="${property.owner.firstName + ' ' + property.owner.lastName}">Име Сопственик</span>
+        </div>
+
+        <div class="d-flex justify-content-between py-2">
+          <span class="text-primary fw-medium">Тип на имот:</span>
+          <span class="text-dark fw-bold" th:text="${property.propertyType.name}">Тип</span>
+        </div>
+      </div>
+      <div class="d-flex justify-content-between">
+        <button class="mt-3 btn header-gradient text-white">Преглед на пријавени</button>
+        <button class="mt-3 btn header-gradient text-white">Детали</button>
+      </div>
+    </div>
+
+    <div style="width: 55%;" class="d-flex justify-content-center">
+      <img class="img-fluid rounded-3 shadow-sm" style="object-fit: cover; max-height: 400px;" th:src="${property.images.size() > 0 ? property.images[0].image : '/default-image.jpg'}">
+    </div>
+  </div>
+
+  <div class="bg-light mt-3 p-4 rounded-4 shadow-sm w-75 m-auto mt-5">
+    <h4 class="text-primary">Опис на имотот:</h4>
+    <p th:text="${property.description}">Опис</p>
+  </div>
+
+  <div class="m-auto w-75">
+    <h2 class="mt-5 mb-3" style="color:#1976d2;">Единици во имотот</h2>
+    <div class="table-responsive rounded-4 shadow-sm">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-primary">
+        <tr>
+          <th class="py-3 px-4">Име на единица</th>
+          <th class="py-3 px-4 d-flex justify-content-end">Акции</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="unit : ${property.units}">
+          <td class="py-3 px-4" th:text="${unit.unitNumber}">Име</td>
+          <td class="py-3 px-3 d-flex justify-content-end">
+            <a th:href="@{'/units/' + ${unit.id}}" class="btn btn-sm btn-outline-primary rounded-pill px-3 me-3">Детали</a>
+            <a th:href="@{'/listings/create?unitId=' + ${unit.id}}" class="btn btn-sm btn-outline-primary rounded-pill px-3">Направи оглас</a>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <a th:href="@{'/units/add?propertyId=' + ${property.id}}" class="mt-3 btn header-gradient text-white">Додади нова единица</a>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
