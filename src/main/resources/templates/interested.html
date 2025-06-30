@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="mk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Domify - Пријавени изнајмувачи</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5fafd 0%, #e3f0ff 100%);
+        }
+        .header-gradient {
+            background: linear-gradient(90deg, #1976d2 0%, #64b5f6 100%);
+        }
+    </style>
+</head>
+<body>
+<header class="header-gradient text-white py-3 rounded-bottom-4 shadow-sm">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-md-6 d-flex align-items-center">
+                <img src="/images/logo.png" class="ms-5 rounded-pill"
+                     style="width: 50px; height: 50px; object-fit: cover;">
+                <h1 class="h2 mb-0 ms-3 me-4">Domify</h1>
+                <button class="btn btn-outline-light">Мои изнајмувања</button>
+            </div>
+
+            <div class="col-md-6 d-flex justify-content-end align-items-center">
+                <div class="dropdown d-inline-block me-5">
+                    <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-circle me-2"></i>Стефан Николов
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="#">Профил</a></li>
+                        <li><a class="dropdown-item" href="#">Мои изнајмувања</a></li>
+                        <li><a class="dropdown-item" href="#">Направи оглас</a></li>
+                        <li><a class="dropdown-item" href="#">Мои имоти</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="#">Одјави се</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="m-auto mt-5 w-75">
+            <a th:href="@{/listings/{id}(id=${listing.id})}" class="btn btn-outline-primary mb-3">
+                <i class="bi bi-arrow-left me-2"></i> Назад
+            </a>
+            <div class="p-4 bg-light-subtle rounded-5">
+                <h2 class="my-3" style="color:#1976d2;">Пријавени изнајмувачи за: <span th:text="${listing.title}">Еднособен стан</span></h2>
+
+                <div th:each="interested : ${interestedList}" class="d-flex justify-content-between align-items-center px-3 py-2 bg-light rounded-3 mb-3">
+                    <div class="py-2 ms-3">
+                        <h5 class="fw-bold text-primary mt-1" th:text="${interested.tenantProfile.user.firstName + ' ' + interested.tenantProfile.user.lastName}">Stefan Nikolov</h5>
+                        <p class="mb-0" th:text="${interested.tenantProfile.user.email}">stefan.nikolov@gmail.com</p>
+                        <p class="mb-0 fw-bold text-success">Рејтинг:
+                            <span th:text="${interested.tenantProfile.user.rating + '/5'}">3/5</span>
+                        </p>                    </div>
+                    <div class="me-3">
+                        <a th:href="@{/lease/create(listingId=${listing.id}, tenantId=${interested.tenantProfile.id})}"
+                           class="btn header-gradient text-white">
+                            Изнајми
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

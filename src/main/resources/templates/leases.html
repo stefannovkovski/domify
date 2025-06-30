@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="mk" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Domify - Изнајмувања</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f5fafd 0%, #e3f0ff 100%);
+    }
+    .header-gradient {
+      background: linear-gradient(90deg, #1976d2 0%, #64b5f6 100%);
+    }
+    .star-rating i {
+      cursor: pointer;
+      transition: color 0.2s;
+      margin-right: 4px;
+    }
+  </style>
+</head>
+<body>
+<header class="header-gradient text-white py-3 rounded-bottom-4 shadow-sm">
+  <div class="container-fluid">
+    <div class="row align-items-center">
+      <div class="col-md-6 d-flex align-items-center">
+        <img th:src="@{/images/logo.png}" class="ms-5 rounded-pill" style="width: 50px; height: 50px; object-fit: cover;">
+        <h1 class="h2 mb-0 ms-3 me-4">Domify</h1>
+        <button class="btn btn-outline-light">Мои изнајмувања</button>
+      </div>
+      <div class="col-md-6 text-end">
+        <span class="btn btn-outline-light me-2">
+          <i class="bi bi-person-circle me-2"></i>
+          <span th:text="${user.firstName + ' ' + user.lastName}">Стефан Николов</span>
+        </span>
+        <a th:href="@{/logout}" class="btn btn-outline-light">Одјави се</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="m-auto w-75">
+  <h2 class="mt-5" style="color:#1976d2;">Мои изнајмувања</h2>
+  <div class="table-responsive rounded-4 shadow-sm">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-primary" style="background-color: #e3f2fd;">
+      <tr>
+        <th class="py-3 px-4">Име на оглас</th>
+        <th class="py-3 px-4">Износ (ден.)</th>
+        <th class="py-3 px-4">Од</th>
+        <th class="py-3 px-4">До</th>
+        <th class="py-3 px-4">Оценка</th>
+        <th class="py-3 px-4">Детали</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="lease : ${leases}">
+        <td class="py-3 px-4" th:text="${lease.listing.title}">Удобен еднособен стан</td>
+        <td class="py-3 px-4 fw-bold text-primary" th:text="${#numbers.formatDecimal(lease.rentAmount, 0, 'COMMA', 2, 'POINT')}">16,800</td>
+        <td class="py-3 px-4" th:text="${#temporals.format(lease.startDate, 'yyyy-MM-dd')}">2025-01-01</td>
+        <td class="py-3 px-4" th:text="${#temporals.format(lease.endDate, 'yyyy-MM-dd')}">2025-12-31</td>
+
+        <td class="py-3 px-4">
+          <div th:if="${userService.isLandlord(user.id)}">
+            <div class="star-rating" th:attr="data-lease-id=${lease.id},data-rate-type='tenant'">
+              <i th:each="star : ${#numbers.sequence(1, 5)}"
+                 th:classappend="${lease.tenant.user.rating >= star} ? 'bi-star-fill' : 'bi-star'"
+                 class="bi fs-4 text-warning"
+                 th:attr="data-value=${star}"></i>
+            </div>
+          </div>
+          <div th:unless="${userService.isLandlord(user.id)}">
+            <div class="star-rating" th:attr="data-lease-id=${lease.id},data-rate-type='landlord'">
+              <i th:each="star : ${#numbers.sequence(1, 5)}"
+                 th:classappend="${lease.landlord.user.rating >= star} ? 'bi-star-fill' : 'bi-star'"
+                 class="bi fs-4 text-warning"
+                 th:attr="data-value=${star}"></i>
+            </div>
+          </div>
+        </td>
+
+        <td class="py-3 px-4">
+          <a th:href="@{/leases/{id}/details(id=${lease.id})}"
+             class="btn btn-sm btn-outline-primary rounded-pill px-3">
+            Види детали
+          </a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script th:inline="javascript">
+  document.querySelectorAll('.star-rating').forEach(container => {
+    const stars = container.querySelectorAll('i');
+    let currentRating = 0;
+    const leaseId = container.dataset.leaseId;
+
+    function setStars(rating) {
+      stars.forEach(star => {
+        star.classList.toggle('bi-star-fill', star.dataset.value <= rating);
+        star.classList.toggle('bi-star', star.dataset.value > rating);
+      });
+    }
+
+    stars.forEach(star => {
+      star.addEventListener('mouseenter', () => {
+        setStars(star.dataset.value);
+      });
+
+      star.addEventListener('mouseleave', () => {
+        setStars(currentRating);
+      });
+
+      star.addEventListener('click', () => {
+        currentRating = star.dataset.value;
+        setStars(currentRating);
+
+        fetch('/api/leases/' + leaseId + '/rate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ rating: currentRating }),
+        })
+                .then(response => {
+                  if (!response.ok) throw new Error('Грешка при испраќање на оценката');
+                  return response.json();
+                })
+                .then(data => {
+                  console.log('Rating saved:', data);
+                })
+                .catch(err => {
+                  alert('Грешка при испраќање на оценката');
+                  console.error(err);
+                  setStars(currentRating);
+                });
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

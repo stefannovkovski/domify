@@ -4,6 +4,7 @@ import com.example.domify.model.Address;
 import com.example.domify.model.Property;
 import com.example.domify.model.PropertyImage;
 import com.example.domify.model.UserD;
+import com.example.domify.model.exceptions.PropertyIdNotFoundException;
 import com.example.domify.repository.AddressRepository;
 import com.example.domify.repository.PropertyImageRepository;
 import com.example.domify.repository.PropertyRepository;
@@ -77,6 +78,11 @@ public class PropertiesServiceImpl implements PropertiesService {
             processImageUploads(images, property);
         }
         return property;
+    }
+
+    @Override
+    public Property findById(Long id) {
+        return propertyRepository.findById(id).orElseThrow(PropertyIdNotFoundException::new);
     }
 
     private void processImageUploads(MultipartFile[] images, Property property) throws IOException {

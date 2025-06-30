@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Domify - Додади единица</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f5fafd 0%, #e3f0ff 100%);
+    }
+
+    .header-gradient {
+      background: linear-gradient(90deg, #1976d2 0%, #64b5f6 100%);
+    }
+
+    .form-section {
+      background-color: white;
+      border-radius: 1rem;
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+
+    .form-label {
+      font-weight: 600;
+      color: #1976d2;
+    }
+  </style>
+</head>
+<body>
+<header class="header-gradient text-white py-3 rounded-bottom-4 shadow-sm">
+  <div class="container-fluid">
+    <div class="row align-items-center">
+      <div class="col-md-6 d-flex align-items-center">
+        <img src="/logo.png" class="ms-5 rounded-pill" style="width: 50px; height: 50px; object-fit: cover;">
+        <h1 class="h2 mb-0 ms-3 me-4">Domify</h1>
+        <button class="btn btn-outline-light">Мои изнајмувања</button>
+      </div>
+      <div class="col-md-6 d-flex justify-content-end align-items-center">
+        <div class="dropdown d-inline-block me-5">
+          <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown"
+                  data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-person-circle me-2"></i>Стефан Николов
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+            <li><a class="dropdown-item" href="#">Профил</a></li>
+            <li><a class="dropdown-item" href="#">Мои изнајмувања</a></li>
+            <li><a class="dropdown-item" href="#">Направи оглас</a></li>
+            <li><a class="dropdown-item" href="#">Мои имоти</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="#">Одјави се</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <!-- Title and back button remain the same -->
+
+      <form th:action="@{/units/save}" method="post" enctype="multipart/form-data">
+        <!-- Hidden field for propertyId -->
+        <input type="hidden" name="propertyId" th:value="${propertyId}">
+
+        <div class="form-section p-4 mb-4">
+          <h4 class="text-primary mb-4 border-bottom pb-2">Основни информации</h4>
+
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label for="unitNumber" class="form-label">Идентификатор на единица</label>
+              <input type="text" class="form-control" id="unitNumber" name="unitNumber" placeholder="Пример 12A" required>
+            </div>
+
+            <div class="col-md-4">
+              <label for="floor" class="form-label">Кат</label>
+              <input type="number" class="form-control" id="floor" name="floor" placeholder="Пример 3" required>
+            </div>
+
+            <div class="col-md-4">
+              <label for="bedrooms" class="form-label">Број на спални соби</label>
+              <input type="number" class="form-control" id="bedrooms" name="bedrooms" placeholder="Пример 2" required>
+            </div>
+
+            <div class="col-md-4">
+              <label for="bathrooms" class="form-label">Број на купатила</label>
+              <input type="number" class="form-control" id="bathrooms" name="bathrooms" placeholder="Пример 1" required>
+            </div>
+
+            <div class="col-md-4">
+              <label for="area" class="form-label">Површина (m²)</label>
+              <input type="number" step="0.01" class="form-control" id="area" name="area" placeholder="Пример 65.50" required>
+            </div>
+
+            <div class="col-md-4">
+              <label for="rent" class="form-label">Кирија (ден)</label>
+              <div class="input-group">
+                <span class="input-group-text">MKD</span>
+                <input type="number" class="form-control" id="rent" name="rent" placeholder="Пример 15000" required>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section p-4 mb-4">
+          <h4 class="text-primary mb-4 border-bottom pb-2">Слики од единицата</h4>
+
+          <div class="border rounded-3 p-4 text-center">
+            <i class="bi bi-cloud-arrow-up fs-1 text-muted"></i>
+            <p class="text-muted mt-2">Влечете и пуштете ги сликите овдека или изберете ги посебно</p>
+            <input type="file" id="images" name="images" multiple accept="image/*" style="display: none;">
+            <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('images').click()">Избери слики</button>
+          </div>
+
+          <div class="mt-3">
+            <small class="text-muted">Максимална големина на слика: 5MB</small>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-3 mb-5">
+          <button type="button" class="btn btn-outline-secondary" onclick="history.back()">Откажи</button>
+          <button type="submit" class="btn header-gradient text-white px-4">Зачувај единица</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous"></script>
+</body>
+</html>
