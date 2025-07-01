@@ -79,7 +79,6 @@
         </div>
       </div>
 
-      <!-- Financial Information -->
       <div class="pt-3">
         <div class="d-flex justify-content-between py-2">
           <span class="text-primary fw-medium">Износ на изнајмување:</span>
@@ -98,7 +97,6 @@
         </div>
       </div>
 
-      <!-- Parties Information -->
       <div class="border-top pt-3 mt-3">
         <div class="d-flex justify-content-between py-2">
           <span class="text-primary fw-medium">Станар:</span>
@@ -129,7 +127,7 @@
       </div>
     </div>
 
-    <div style="width: 55%;">
+    <div style="width: 55%;" class="m-auto">
       <img th:src="${lease.listing.unit.images[0].image}"
            th:alt="${lease.listing.title}"
            class="img-fluid property-image"
@@ -138,20 +136,18 @@
     </div>
   </div>
 
-  <!-- Property Description -->
   <div class="info-section mt-4 p-4 rounded-4 shadow-sm">
     <h4 class="text-primary mb-3">
-      <i class="bi bi-info-circle me-2"></i>Опис на имотот
+      <i class="bi bi-info-circle me-2"></i>Опис
     </h4>
     <p th:text="${lease.listing.description}" class="mb-0">
       Удобен стан со 1 спална соба, совршен за самохран професионалец
     </p>
   </div>
 
-  <!-- Property Details -->
   <div class="info-section mt-4 p-4 rounded-4 shadow-sm">
     <h4 class="text-primary mb-3">
-      <i class="bi bi-house me-2"></i>Детали за имотот
+      <i class="bi bi-house me-2"></i>Детали за единицата
     </h4>
     <div class="row">
       <div class="col-md-6">
@@ -179,20 +175,19 @@
     </div>
   </div>
 
-  <!-- Action Buttons -->
   <div class="mt-4 d-flex justify-content-around align-items-center flex-wrap gap-3">
     <button class="btn text-white px-4 py-2 rounded-4 shadow-sm header-gradient action-btn">
       <i class="bi bi-chat-dots me-2"></i>Пораки
     </button>
-    <button class="btn text-white px-4 py-2 rounded-4 shadow-sm header-gradient action-btn">
-      <i class="bi bi-file-earmark-text me-2"></i>Документи
-    </button>
+    <a href="/documents" class="btn text-white px-4 py-2 rounded-4 shadow-sm header-gradient action-btn text-decoration-none">
+      <i class="bi bi-chat-dots me-2"></i>Документи
+    </a>
     <button class="btn text-white px-4 py-2 rounded-4 shadow-sm header-gradient action-btn">
       <i class="bi bi-search me-2"></i>Инспекции
     </button>
-    <button class="btn text-white px-4 py-2 rounded-4 shadow-sm header-gradient action-btn">
-      <i class="bi bi-tools me-2"></i>Сервиси
-    </button>
+    <a href="/services" class="btn text-white px-4 py-2 rounded-4 shadow-sm header-gradient action-btn text-decoration-none">
+      <i class="bi bi-chat-dots me-2"></i>Сервиси
+    </a>
     <button class="btn text-white px-4 py-2 rounded-4 shadow-sm header-gradient action-btn">
       <i class="bi bi-credit-card me-2"></i>Плаќања
     </button>

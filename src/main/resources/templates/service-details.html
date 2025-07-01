@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Domify - Детали за сервисна порака</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f5fafd 0%, #e3f0ff 100%);
+    }
+    .header-gradient {
+      background: linear-gradient(90deg, #1976d2 0%, #64b5f6 100%);
+    }
+    .status-pending {
+      color: #ff9800;
+      background-color: #fff3e0;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+    }
+    /*.status-completed {*/
+    /*  color: #4caf50;*/
+    /*  background-color: #e8f5e9;*/
+    /*  padding: 0.25rem 0.5rem;*/
+    /*  border-radius: 0.25rem;*/
+    /*}*/
+    /*.status-in-progress {*/
+    /*  color: #2196f3;*/
+    /*  background-color: #e3f2fd;*/
+    /*  padding: 0.25rem 0.5rem;*/
+    /*  border-radius: 0.25rem;*/
+    /*}*/
+  </style>
+</head>
+<body>
+<div>
+  <div th:replace="fragments/header :: appHeader(${user}, ${isLandlord})"></div>
+</div>
+
+<div class="mt-4 bg-light-subtle rounded-4 shadow-sm p-5 m-auto mb-4 w-50">
+  <a href="/services" class="btn btn-outline-primary">
+    <i class="bi bi-arrow-left me-2"></i> Назад кон сервисни пораки
+  </a>
+
+  <div class="d-flex justify-content-between align-items-start gap-4 mt-4">
+    <div class="m-auto" style="width: 100%;">
+      <h2 class="text-primary mb-4 fw-bold">Детали за сервисна порака</h2>
+
+      <div class="border-top border-bottom py-3">
+        <div class="d-flex justify-content-between py-2">
+          <span class="text-primary fw-medium">Категорија:</span>
+          <span class="text-dark fw-bold">Електрика</span>
+        </div>
+        <div class="d-flex justify-content-between py-2">
+          <span class="text-primary fw-medium">Датум:</span>
+          <span class="text-dark">2024-07-01</span>
+        </div>
+        <div class="d-flex justify-content-between py-2">
+          <span class="text-primary fw-medium">Статус:</span>
+          <span class="status-pending">Во чекање</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="bg-light mt-3 p-4 rounded-4 shadow-sm m-auto mt-5">
+    <h4 class="text-primary">Опис на проблемот:</h4>
+    <p>Светлото во ходникот не работи.</p>
+  </div>
+
+  <div class="m-auto w-75 mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <button class="btn btn-success me-2" onclick="updateStatus(1, 'COMPLETED')">
+          <i class="bi bi-check-circle me-2"></i>Означи како завршено
+        </button>
+        <a href="/service-requests/1/messages" class="btn btn-primary">
+          <i class="bi bi-chat-dots me-2"></i>Пораки и логови
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function updateStatus(requestId, status) {
+    fetch('/api/service-requests/' + requestId + '/status', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ status: status })
+    })
+            .then(response => {
+              if (response.ok) {
+                location.reload();
+              } else {
+                alert('Грешка при ажурирање на статусот');
+              }
+            })
+            .catch(error => console.error('Error:', error));
+  }
+</script>
+</body>
+</html>

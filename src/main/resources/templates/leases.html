@@ -163,7 +163,6 @@
                 .catch(err => {
                   console.error('Error saving rating:', err);
                   alert('Грешка при зачувување на оценката: ' + err.message);
-                  // Reset stars on error
                   currentRating = 0;
                   setStars(currentRating);
                 });
