@@ -12,7 +12,7 @@ public class PaymentScheduledJobs {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Scheduled(cron = "0 5 0 16-17 * *")
+    @Scheduled(cron = "0 0 9 1-5 * *")
     @Transactional
     public void callReminderProcedure() {
         entityManager
