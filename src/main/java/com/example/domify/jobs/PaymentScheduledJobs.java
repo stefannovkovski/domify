@@ -19,4 +19,13 @@ public class PaymentScheduledJobs {
                 .createNativeQuery("CALL domify.send_monthly_payment_reminders()")
                 .executeUpdate();
     }
+
+    @Scheduled(cron = "0 0 10 * * 1")
+    @Transactional
+    public void callUnresolvedServiceReminderProcedure() {
+        entityManager
+                .createNativeQuery("CALL domify.send_unresolved_service_request_reminders()")
+                .executeUpdate();
+    }
+
 }
